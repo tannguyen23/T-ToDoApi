@@ -4,6 +4,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser")
 
+require('dotenv').config()
+
+
 //confifuration cors
 const corsOptions = {
   origin: "http://localhost:3001",
@@ -32,7 +35,7 @@ app.use("/api/category", categoryRoute);
 
 mongoose
   .connect(
-    "mongodb+srv://admin:admin123456@tlearndb.hwum8mo.mongodb.net/Node-API?retryWrites=true&w=majority"
+    process.env.MONGODB_URL
   )
   .then(() => {
     console.log("Connected to MongoDB");
