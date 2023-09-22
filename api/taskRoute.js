@@ -1,100 +1,38 @@
 const express = require("express");
-const Task = require("../models/taskModel");
 const taskRoute = express.Router();
+const isAuth = require("../auth/auth.middleware");
+const TaskController = require("../controllers/taskController");
 
-taskRoute.get("/", async (req, res) => {
-  try {
-    const tasks = await Task.find({});
-    res.status(200).json(tasks);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
-});
+// TODO : get tasks by ownerId on current month
+taskRoute.get("/tasks-on-month/:id", TaskController.apiGetTasksOnMonthByOwnerId);
 
-taskRoute.get("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const task = await Task.findById(id);
-    if (!task) {
-      res
-        .status(404)
-        .json({ message: "Can not find any task with id : " + id });
-    } else {
-      res.status(200).json(task);
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
-});
+// TODO : get task by ownerId on current week
+taskRoute.get("/tasks-on-week/:id", TaskController.apiGetTasksOnWeakByOwnerId);
 
-taskRoute.post("/", async (req, res) => {
-  try {
-    const task = await Task.create(req.body);
-    res.status(200).json(task);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
-});
 
-taskRoute.put("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const task = await Task.findByIdAndUpdate(id, req.body);
-    if (!task) {
-      res
-        .status(404)
-        .json({ message: "Can not find any task with id : " + id });
-    } else {
-      res.status(200).json(task);
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
-});
+// TODO: get tasks by ownerId on current date
+taskRoute.get("/tasks-on-date/:id", TaskController.apiGetTasksOnDayByOwnerId);
 
-taskRoute.put("/update-status/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    console.log(
-      JSON.stringify({ _id: id }) +
-        JSON.stringify({ status: req.body.newStatus })
-    );
-    const task = await Task.findOneAndUpdate(
-      { _id: id },
-      { status: req.body.newStatus }
-    );
-    if (!task) {
-      res
-        .status(404)
-        .json({ message: "Can not find any task with id : " + id });
-    } else {
-      res.status(200).json(task);
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
-});
+// TODO : get all tasks by ownerId 
+taskRoute.get(
+	"/get-by-ownerid/:id",
+	isAuth,
+	TaskController.apiGetTasksByOwnerId
+);
 
-taskRoute.delete("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const task = await Task.findByIdAndDelete(id);
-    if (!task) {
-      res
-        .status(404)
-        .json({ message: "Can not find any task with id : " + id });
-    } else {
-      res.status(200).json(task);
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.message });
-  }
-});
+// TODO: get task by id of task
+taskRoute.get("/:id", isAuth, TaskController.apiGetTaskById);
+
+// TODO: create a task
+taskRoute.post("/", isAuth, TaskController.apiCreateTask);
+
+// TODO: Update a task
+taskRoute.put("/:id", isAuth, TaskController.apiUpdateTask);
+
+// TODO : Update status a task
+taskRoute.put("/update-status/:id", isAuth, TaskController.apiUpdateStatusTask);
+
+// TODO : Delete a task
+taskRoute.delete("/:id", isAuth, TaskController.apiDeleteTask);
 
 module.exports = taskRoute;
